@@ -148,7 +148,116 @@
             align-items: center;
             margin: 40px 0;
             gap: 20px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap; /* שינוי מ-wrap ל-nowrap */
+        }
+        
+        /* סטיילים מיוחדים למובייל */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                max-width: 100%;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .exercise-container {
+                gap: 10px;
+                margin: 20px 0;
+                /* הקטנת גודל האלמנטים במובייל */
+                transform: scale(0.85);
+            }
+            
+            .number-spinner {
+                width: 80px;
+                height: 120px;
+            }
+            
+            .operator-spinner {
+                width: 60px;
+                height: 120px;
+            }
+            
+            .spinner-display {
+                height: 60px;
+                font-size: 2.5rem;
+            }
+            
+            .operator-display {
+                height: 60px;
+                font-size: 2rem;
+            }
+            
+            .spinner-button {
+                width: 30px;
+                height: 30px;
+                font-size: 1.2rem;
+            }
+            
+            .spinner-controls {
+                padding: 10px;
+            }
+            
+            .btn {
+                padding: 12px 30px;
+                font-size: 1.1rem;
+            }
+            
+            .instructions {
+                font-size: 1rem;
+                padding: 15px;
+            }
+            
+            .number-label {
+                font-size: 0.85rem;
+                top: -20px;
+            }
+            
+            .shapes-container {
+                grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+                gap: 10px;
+                padding: 15px;
+            }
+            
+            .shape {
+                width: 50px;
+                height: 50px;
+            }
+        }
+        
+        /* למסכים ממש קטנים */
+        @media (max-width: 400px) {
+            .exercise-container {
+                transform: scale(0.75);
+                margin: 15px 0;
+            }
+            
+            .number-spinner {
+                width: 70px;
+                height: 100px;
+            }
+            
+            .operator-spinner {
+                width: 50px;
+                height: 100px;
+            }
+            
+            .spinner-display {
+                height: 50px;
+                font-size: 2rem;
+            }
+            
+            .operator-display {
+                height: 50px;
+                font-size: 1.8rem;
+            }
+            
+            .spinner-button {
+                width: 25px;
+                height: 25px;
+                font-size: 1rem;
+            }
         }
         
         .number-spinner {
