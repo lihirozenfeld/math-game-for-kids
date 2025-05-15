@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>משחק מנייה לילדים</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&family=Varela+Round&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Varela Round', sans-serif;
+            background: linear-gradient(135deg, #ffde59, #ff914d, #ff5757, #cb6ce6);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            direction: rtl;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .screen {
+            display: none;
+        }
+        
+        .active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #ff5757;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .instructions {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .btn {
+            background-color: #ff5757;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            font-family: 'Varela Round', sans-serif;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 87, 87, 0.4);
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 87, 87, 0.6);
+        }
+        
+        .exercise-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+            gap: 20px;
+        }
+        
+        .number-spinner {
+            width: 100px;
+            height: 140px;
+            position: relative;
+            background-color: #fff;
+            border: 3px solid #ff5757;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .spinner-display {
+            width: 100%;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            color: #333;
+            background-color: #f8f8f8;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .spinner-controls {
+            display: flex;
+            justify-content: space-around;
+            padding: 5px;
+        }
+        
+        .spinner-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ff5757;
+            color: white;
+            font-size: 1.5rem;
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s;
+        }
+        
+        .spinner-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+        }
+        
+        .spinner-button:active {
+            transform: scale(0.95);
+        }
+        
+        .operator-spinner {
+            width: 70px;
+            height: 110px;
+            position: relative;
+            background-color: #fff;
+            border: 3px solid #ff914d;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .operator-display {
+            width: 100%;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            color: #333;
+            background-color: #f8f8f8;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .shapes-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .shape {
+            width: 60px;
+            height: 60px;
+            animation: popIn 0.5s;
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            70% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .star-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        
+        .star {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #ffde59;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .header img {
+            width: 60px;
+            height: 60px;
+            margin: 0 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- מסך הוראות -->
+        <div id="instructions-screen" class="screen active">
+            <div class="header">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="60" height="60">
+                    <path d="M50 10L61 35L90 38L70 56L74 85L50 72L26 85L30 56L10 38L39 35L50 10Z" fill="#FFD166" stroke="#E6B800" stroke-width="1" style="filter: hue-rotate(200deg);" />
+                    <ellipse cx="40" cy="40" rx="5" ry="5" fill="white" fill-opacity="0.5" />
+                </svg>
+                <h1>משחק החשבון השמח</h1>
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="60" height="60">
+                    <path d="M50 10L61 35L90 38L70 56L74 85L50 72L26 85L30 56L10 38L39 35L50 10Z" fill="#FFD166" stroke="#E6B800" stroke-width="1" style="filter: hue-rotate(120deg);" />
+                    <ellipse cx="40" cy="40" rx="5" ry="5" fill="white" fill-opacity="0.5" />
+                </svg>
+            </div>
+            <div class="instructions">
+                <p>ברוכים הבאים למשחק החשבון השמח!</p>
+                <p>הכניסו מספרים ובחרו פעולת חיבור (+) או חיסור (-)</p>
+                <p>לחצו על "הצג תוצאה" כדי לראות את התשובה בצורות צבעוניות!</p>
+                <p>אז מה אתם מחכים? בואו נתחיל לשחק ולספור!</p>
+            </div>
+            <button id="start-btn" class="btn">התחל</button>
+        </div>
+        
+        <!-- מסך התרגיל -->
+        <div id="exercise-screen" class="screen">
+            <div class="header">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="60" height="60">
+                    <circle cx="50" cy="55" r="30" fill="#E30000" />
+                    <path d="M50 25 Q40 30 50 32 Q60 30 50 25" fill="#5D3A1A" />
+                    <path d="M50 25 Q60 15 70 20 Q65 24 50 25" fill="#37A13B" stroke="#2E8540" stroke-width="1" />
+                    <path d="M50 25 L50 18" stroke="#5D3A1A" stroke-width="2" stroke-linecap="round" />
+                    <ellipse cx="40" cy="45" rx="12" ry="8" fill="white" fill-opacity="0.3" />
+                </svg>
+                <h1>מה התוצאה?</h1>
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="60" height="60">
+                    <circle cx="50" cy="55" r="30" fill="#E30000" />
+                    <path d="M50 25 Q40 30 50 32 Q60 30 50 25" fill="#5D3A1A" />
+                    <path d="M50 25 Q40 15 30 20 Q35 24 50 25" fill="#37A13B" stroke="#2E8540" stroke-width="1" />
+                    <path d="M50 25 L50 18" stroke="#5D3A1A" stroke-width="2" stroke-linecap="round" />
+                    <ellipse cx="40" cy="45" rx="12" ry="8" fill="white" fill-opacity="0.3" />
+                    <path d="M70 45 Q80 55 70 70" stroke="#FF6666" stroke-width="8" stroke-linecap="round" opacity="0.5" style="filter: hue-rotate(320deg);" />
+                </svg>
+            </div>
+            <div class="exercise-container">
+                <div class="number-spinner">
+                    <div id="num1-display" class="spinner-display">0</div>
+                    <div class="spinner-controls">
+                        <button class="spinner-button" onclick="changeNumber('num1', -1)">-</button>
+                        <button class="spinner-button" onclick="changeNumber('num1', 1)">+</button>
+                    </div>
+                </div>
+                
+                <div class="operator-spinner">
+                    <div id="operator-display" class="operator-display">+</div>
+                    <div class="spinner-controls">
+                        <button class="spinner-button" onclick="toggleOperator()">⟳</button>
+                    </div>
+                </div>
+                
+                <div class="number-spinner">
+                    <div id="num2-display" class="spinner-display">0</div>
+                    <div class="spinner-controls">
+                        <button class="spinner-button" onclick="changeNumber('num2', -1)">-</button>
+                        <button class="spinner-button" onclick="changeNumber('num2', 1)">+</button>
+                    </div>
+                </div>
+            </div>
+            <button id="result-btn" class="btn">הצג תוצאה</button>
+        </div>
+        
+        <!-- מסך התוצאה -->
+        <div id="result-screen" class="screen">
+            <div class="header">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="60" height="60">
+                    <path d="M50 80C80 60 95 30 75 15C65 5 50 20 50 20C50 20 35 5 25 15C5 30 20 60 50 80Z" fill="#FF2D55" stroke="#CC0033" stroke-width="1.5" style="filter: hue-rotate(270deg);" />
+                    <ellipse cx="30" cy="30" rx="7" ry="5" fill="white" fill-opacity="0.4" />
+                </svg>
+                <h1>התשובה היא:</h1>
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="60" height="60">
+                    <path d="M50 80C80 60 95 30 75 15C65 5 50 20 50 20C50 20 35 5 25 15C5 30 20 60 50 80Z" fill="#FF2D55" stroke="#CC0033" stroke-width="1.5" style="filter: hue-rotate(90deg);" />
+                    <circle cx="25" cy="25" r="1" fill="white" />
+                    <circle cx="35" cy="20" r="1.5" fill="white" />
+                </svg>
+            </div>
+            <div id="result-display" class="instructions"></div>
+            <div id="shapes-container" class="shapes-container"></div>
+            <button id="next-btn" class="btn">תרגיל נוסף</button>
+        </div>
+    </div>
+
+    <script>
+        // יצירת הכוכבים ברקע
+        function createStars() {
+            const starContainer = document.createElement('div');
+            starContainer.className = 'star-bg';
+            
+            for (let i = 0; i < 40; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.transform = `rotate(${Math.random() * 360}deg)`;
+                star.style.opacity = `${0.2 + Math.random() * 0.8}`;
+                star.style.width = `${10 + Math.random() * 20}px`;
+                star.style.height = `${10 + Math.random() * 20}px`;
+                
+                starContainer.appendChild(star);
+            }
+            
+            document.querySelector('.container').appendChild(starContainer);
+        }
+        
+        // פונקציה להחלפת מסכים
+        function switchScreen(fromId, toId) {
+            document.getElementById(fromId).classList.remove('active');
+            document.getElementById(toId).classList.add('active');
+        }
+        
+        // רשימת הצורות האפשריות
+        const shapes = [
+            { name: 'תפוחים', svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <!-- צל תחתון -->
+                <ellipse cx="50" cy="77" rx="28" ry="6" fill="rgba(0,0,0,0.2)" />
+                <!-- גוף התפוח -->
+                <circle cx="50" cy="55" r="30" fill="#E30000" />
+                <!-- שקע עליון -->
+                <path d="M50 25 Q40 30 50 32 Q60 30 50 25" fill="#5D3A1A" />
+                <!-- עלה -->
+                <path d="M50 25 Q60 15 70 20 Q65 24 50 25" fill="#37A13B" stroke="#2E8540" stroke-width="1" />
+                <path d="M50 25 Q40 15 30 20 Q35 24 50 25" fill="#37A13B" stroke="#2E8540" stroke-width="1" />
+                <!-- גבעול -->
+                <path d="M50 25 L50 18" stroke="#5D3A1A" stroke-width="2" stroke-linecap="round" />
+                <!-- הבהרה -->
+                <ellipse cx="40" cy="45" rx="12" ry="8" fill="white" fill-opacity="0.3" />
+                <!-- צד מואר -->
+                <path d="M70 45 Q80 55 70 70" stroke="#FF6666" stroke-width="8" stroke-linecap="round" opacity="0.5" />
+                <!-- צד כהה -->
+                <path d="M30 45 Q20 55 30 70" stroke="#990000" stroke-width="8" stroke-linecap="round" opacity="0.3" />
+            </svg>` },
+            { name: 'כוכבים', svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 10L61 35L90 38L70 56L74 85L50 72L26 85L30 56L10 38L39 35L50 10Z" fill="#FFCC00" stroke="#E6B800" stroke-width="1" />
+                <ellipse cx="40" cy="40" rx="5" ry="5" fill="white" fill-opacity="0.5" />
+            </svg>` },
+            { name: 'פרחים', svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <!-- עלה כותרת עליון -->
+                <ellipse cx="50" cy="25" rx="12" ry="20" fill="#FF69B4" stroke="#FF1493" stroke-width="1" transform="rotate(0 50 50)" />
+                <!-- עלה כותרת ימני-עליון -->
+                <ellipse cx="50" cy="25" rx="12" ry="20" fill="#FFB6C1" stroke="#FF1493" stroke-width="1" transform="rotate(72 50 50)" />
+                <!-- עלה כותרת ימני-תחתון -->
+                <ellipse cx="50" cy="25" rx="12" ry="20" fill="#FFC0CB" stroke="#FF1493" stroke-width="1" transform="rotate(144 50 50)" />
+                <!-- עלה כותרת שמאלי-תחתון -->
+                <ellipse cx="50" cy="25" rx="12" ry="20" fill="#FFB6C1" stroke="#FF1493" stroke-width="1" transform="rotate(216 50 50)" />
+                <!-- עלה כותרת שמאלי-עליון -->
+                <ellipse cx="50" cy="25" rx="12" ry="20" fill="#FF69B4" stroke="#FF1493" stroke-width="1" transform="rotate(288 50 50)" />
+                <!-- מרכז הפרח -->
+                <circle cx="50" cy="50" r="15" fill="#FFD700" stroke="#FFA500" stroke-width="1.5" />
+                <!-- פרטים במרכז -->
+                <circle cx="45" cy="45" r="2" fill="#FF8C00" />
+                <circle cx="55" cy="45" r="2" fill="#FF8C00" />
+                <circle cx="50" cy="50" r="2" fill="#FF8C00" />
+                <circle cx="45" cy="55" r="2" fill="#FF8C00" />
+                <circle cx="55" cy="55" r="2" fill="#FF8C00" />
+                <!-- הבהרה על המרכז -->
+                <ellipse cx="45" cy="45" rx="5" ry="3" fill="white" fill-opacity="0.4" />
+            </svg>` },
+            { name: 'לבבות', svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <!-- צל תחתון -->
+                <path d="M52 83C82 63 97 33 77 18C67 8 52 23 52 23C52 23 37 8 27 18C7 33 22 63 52 83Z" fill="#CC0033" fill-opacity="0.3" />
+                <!-- לב עיקרי -->
+                <path d="M50 80C80 60 95 30 75 15C65 5 50 20 50 20C50 20 35 5 25 15C5 30 20 60 50 80Z" fill="#FF2D55" stroke="#CC0033" stroke-width="1.5" />
+                <!-- הבהרות -->
+                <path d="M30 25C35 20 40 25 40 25C40 25 30 40 20 45C20 35 25 30 30 25Z" fill="#FF6482" />
+                <ellipse cx="30" cy="30" rx="7" ry="5" fill="white" fill-opacity="0.4" />
+                <!-- קישוט נוצץ -->
+                <circle cx="25" cy="25" r="1" fill="white" />
+                <circle cx="35" cy="20" r="1.5" fill="white" />
+                <circle cx="70" cy="30" r="1" fill="white" />
+                <circle cx="45" cy="65" r="1.5" fill="white" />
+            </svg>` },
+            { name: 'בלונים', svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <!-- צל תחתון -->
+                <ellipse cx="50" cy="95" rx="10" ry="2" fill="rgba(0,0,0,0.2)" />
+                <!-- גוף הבלון -->
+                <path d="M50 15 Q25 25 30 50 Q35 75 50 70 Q65 75 70 50 Q75 25 50 15" fill="#5AC8FA" stroke="#0080FF" stroke-width="1.5" />
+                <!-- קשר בתחתית הבלון -->
+                <path d="M50 70 Q48 72 50 74 Q52 72 50 70" fill="#0080FF" stroke="#0080FF" stroke-width="0.7" />
+                <!-- חוט הבלון -->
+                <path d="M50 74 C55 78 45 82 50 86 C55 90 45 94 50 95" stroke="#666666" stroke-width="1" fill="none" />
+                <!-- הבהרה עליונה -->
+                <ellipse cx="40" cy="30" rx="12" ry="8" fill="white" fill-opacity="0.4" />
+                <!-- הבהרה קטנה -->
+                <ellipse cx="60" cy="50" rx="5" ry="3" fill="white" fill-opacity="0.3" />
+                <!-- אפקט מבריק 1 -->
+                <circle cx="35" cy="28" r="2" fill="white" fill-opacity="0.8" />
+                <!-- אפקט מבריק 2 -->
+                <circle cx="45" cy="22" r="1" fill="white" fill-opacity="0.8" />
+            </svg>` },
+        ];
+        
+        // חישוב תוצאה
+        function calculateResult() {
+            const num1 = parseInt(document.getElementById('num1-display').innerText);
+            const num2 = parseInt(document.getElementById('num2-display').innerText);
+            const operator = document.getElementById('operator-display').innerText;
+            
+            return operator === '+' ? num1 + num2 : num1 - num2;
+        }
+        
+        // שינוי מספרים בגלגלות
+        function changeNumber(id, change) {
+            const display = document.getElementById(`${id}-display`);
+            let value = parseInt(display.innerText);
+            
+            value += change;
+            
+            // הגבלת המספרים בין 0 ל-9
+            if (value < 0) value = 0;
+            if (value > 9) value = 9;
+            
+            display.innerText = value;
+        }
+        
+        // החלפת אופרטור
+        function toggleOperator() {
+            const display = document.getElementById('operator-display');
+            display.innerText = display.innerText === '+' ? '-' : '+';
+        }
+        
+        // הצגת תוצאה בצורות
+        function displayResult(result) {
+            // בדיקה אם התוצאה היא מספר שלילי
+            if (result < 0) {
+                document.getElementById('result-display').textContent = `התוצאה היא ${result}. אי אפשר להציג מספר שלילי בצורות.`;
+                return;
+            }
+            
+            // בחירת צורה אקראית
+            const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
+            
+            // הצגת הטקסט של התוצאה
+            document.getElementById('result-display').textContent = `התוצאה היא ${result} ${randomShape.name}`;
+            
+            // מחיקת הצורות הקיימות
+            const shapesContainer = document.getElementById('shapes-container');
+            shapesContainer.innerHTML = '';
+            
+            // הוספת הצורות החדשות
+            for (let i = 0; i < result; i++) {
+                const shapeElement = document.createElement('div');
+                shapeElement.className = 'shape';
+                shapeElement.innerHTML = randomShape.svg;
+                
+                // הוספת צבע אקראי לכל צורה
+                const hue = Math.floor(Math.random() * 360);
+                shapeElement.style.filter = `hue-rotate(${hue}deg)`;
+                
+                // הוספת אנימציה מדורגת
+                shapeElement.style.animationDelay = `${i * 0.1}s`;
+                
+                shapesContainer.appendChild(shapeElement);
+            }
+        }
+        
+        // התחלת המשחק
+        window.onload = function() {
+            createStars();
+            
+            // מעבר ממסך הוראות למסך התרגיל
+            document.getElementById('start-btn').addEventListener('click', function() {
+                switchScreen('instructions-screen', 'exercise-screen');
+            });
+            
+            // מעבר ממסך התרגיל למסך התוצאה
+            document.getElementById('result-btn').addEventListener('click', function() {
+                const result = calculateResult();
+                if (result !== null) {
+                    displayResult(result);
+                    switchScreen('exercise-screen', 'result-screen');
+                }
+            });
+            
+            // מעבר ממסך התוצאה למסך התרגיל
+            document.getElementById('next-btn').addEventListener('click', function() {
+                // איפוס המספרים והאופרטור לערכים התחלתיים
+                document.getElementById('num1-display').innerText = '0';
+                document.getElementById('num2-display').innerText = '0';
+                document.getElementById('operator-display').innerText = '+';
+                switchScreen('result-screen', 'exercise-screen');
+            });
+        };
+    </script>
+</body>
+</html>
