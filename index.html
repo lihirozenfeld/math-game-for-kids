@@ -272,11 +272,11 @@
                 </svg>
             </div>
             <div class="exercise-container">
-                <div class="number-spinner" id="spinner1">
-                    <div id="num1-display" class="spinner-display">0</div>
+                <div class="number-spinner" id="spinner2">
+                    <div id="num2-display" class="spinner-display">0</div>
                     <div class="spinner-controls">
-                        <button class="spinner-button" onclick="changeNumber('num1', -1)">-</button>
-                        <button class="spinner-button" onclick="changeNumber('num1', 1)">+</button>
+                        <button class="spinner-button" onclick="changeNumber('num2', -1)">-</button>
+                        <button class="spinner-button" onclick="changeNumber('num2', 1)">+</button>
                     </div>
                 </div>
                 
@@ -287,11 +287,11 @@
                     </div>
                 </div>
                 
-                <div class="number-spinner" id="spinner2">
-                    <div id="num2-display" class="spinner-display">0</div>
+                <div class="number-spinner" id="spinner1">
+                    <div id="num1-display" class="spinner-display">0</div>
                     <div class="spinner-controls">
-                        <button class="spinner-button" onclick="changeNumber('num2', -1)">-</button>
-                        <button class="spinner-button" onclick="changeNumber('num2', 1)">+</button>
+                        <button class="spinner-button" onclick="changeNumber('num1', -1)">-</button>
+                        <button class="spinner-button" onclick="changeNumber('num1', 1)">+</button>
                     </div>
                 </div>
             </div>
@@ -436,31 +436,31 @@
                 let num1 = parseInt(num1Display.innerText);
                 let num2 = parseInt(num2Display.innerText);
                 
-                if (id === 'num1') {
-                    // משנים את המספר הימני
-                    num1 += change;
-                    if (num1 < 0) num1 = 0;
-                    if (num1 > 9) num1 = 9;
-                    
-                    // אם המספר הימני קטן מהשמאלי, הגבל את השמאלי
-                    if (num1 < num2) {
-                        num2 = num1;
-                    }
-                    
-                    num1Display.innerText = num1;
-                    num2Display.innerText = num2;
-                } else if (id === 'num2') {
-                    // משנים את המספר השמאלי
+                if (id === 'num2') {
+                    // משנים את המספר הגדול (שמאלי)
                     num2 += change;
                     if (num2 < 0) num2 = 0;
                     if (num2 > 9) num2 = 9;
                     
-                    // בפעולת חיסור, המספר השמאלי לא יכול להיות גדול מהימני
-                    if (num2 > num1) {
-                        num2 = num1;
+                    // אם המספר הגדול קטן מהקטן, הגבל את הקטן
+                    if (num2 < num1) {
+                        num1 = num2;
                     }
                     
                     num2Display.innerText = num2;
+                    num1Display.innerText = num1;
+                } else if (id === 'num1') {
+                    // משנים את המספר הקטן (ימני)
+                    num1 += change;
+                    if (num1 < 0) num1 = 0;
+                    if (num1 > 9) num1 = 9;
+                    
+                    // בפעולת חיסור, המספר הקטן לא יכול להיות גדול מהגדול
+                    if (num1 > num2) {
+                        num1 = num2;
+                    }
+                    
+                    num1Display.innerText = num1;
                 }
             } else {
                 // בפעולת חיבור, עובד כרגיל
@@ -480,28 +480,27 @@
             const display = document.getElementById('operator-display');
             display.innerText = display.innerText === '+' ? '-' : '+';
             
-            // כשעוברים לחיסור, וודא שהמספר השמאלי לא גדול מהימני
+            // כשעוברים לחיסור, וודא שהמספר הקטן לא גדול מהגדול
             if (display.innerText === '-') {
                 const num1Display = document.getElementById('num1-display');
                 const num2Display = document.getElementById('num2-display');
                 let num1 = parseInt(num1Display.innerText);
                 let num2 = parseInt(num2Display.innerText);
                 
-                if (num2 > num1) {
-                    num2Display.innerText = num1;
+                if (num1 > num2) {
+                    num1Display.innerText = num2;
                 }
             }
         }
         
         // חישוב תוצאה
         function calculateResult() {
-            // תמיד קח את המספר מהמקום הימני (num1) כמספר הראשון בתרגיל
-            const rightNumber = parseInt(document.getElementById('num1-display').innerText);
-            const leftNumber = parseInt(document.getElementById('num2-display').innerText);
+            const num1 = parseInt(document.getElementById('num1-display').innerText);
+            const num2 = parseInt(document.getElementById('num2-display').innerText);
             const operator = document.getElementById('operator-display').innerText;
             
-            // בעברית קוראים מימין לשמאל
-            return operator === '+' ? rightNumber + leftNumber : rightNumber - leftNumber;
+            // בעברית קוראים מימין לשמאל, אז num2 הוא הראשון
+            return operator === '+' ? num2 + num1 : num2 - num1;
         }
         
         // הצגת תוצאה בצורות
@@ -560,3 +559,4 @@
             // מעבר ממסך התוצאה למסך התרגיל
             document.getElementById('next-btn').addEventListener('click', function() {
                 // איפוס המספרים והאופרטור לערכים התחלתיים
+                document.getElementByI
