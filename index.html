@@ -437,30 +437,30 @@
                 let num1 = parseInt(num1Display.innerText);
                 let num2 = parseInt(num2Display.innerText);
                 
-                // אם המספר השמאלי גדול מהימני, החלף את הערכים
-                if (num2 > num1) {
+                // במתמטיקה, המספר הגדול צריך להיות משמאל (num2) והקטן מימין (num1)
+                // אם המספר הימני (num1) גדול מהשמאלי (num2), החלף אותם
+                if (num1 > num2) {
+                    const temp = num1;
                     num1Display.innerText = num2;
-                    num2Display.innerText = num1;
+                    num2Display.innerText = temp;
                 }
             }
         }
         
         // חישוב תוצאה
         function calculateResult() {
-            // תמיד קח את המספר מהמקום הימני (num1) כמספר הראשון בתרגיל
-            const rightNumber = parseInt(document.getElementById('num1-display').innerText);
-            const leftNumber = parseInt(document.getElementById('num2-display').innerText);
+            const num1 = parseInt(document.getElementById('num1-display').innerText);
+            const num2 = parseInt(document.getElementById('num2-display').innerText);
             const operator = document.getElementById('operator-display').innerText;
             
-            // בעברית קוראים מימין לשמאל
-            return operator === '+' ? rightNumber + leftNumber : rightNumber - leftNumber;
+            // במתמטיקה, חיסור הוא משמאל לימין (num2 - num1)
+            return operator === '+' ? num1 + num2 : num2 - num1;
         }
         
         // שינוי מספרים בגלגלות
         function changeNumber(id, change) {
             const display = document.getElementById(`${id}-display`);
             let value = parseInt(display.innerText);
-            const originalValue = value;
             
             value += change;
             
