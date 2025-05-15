@@ -272,7 +272,7 @@
                 </svg>
             </div>
             <div class="exercise-container">
-                <div class="number-spinner">
+                <div class="number-spinner" id="spinner1">
                     <div id="num1-display" class="spinner-display">0</div>
                     <div class="spinner-controls">
                         <button class="spinner-button" onclick="changeNumber('num1', -1)">-</button>
@@ -287,7 +287,7 @@
                     </div>
                 </div>
                 
-                <div class="number-spinner">
+                <div class="number-spinner" id="spinner2">
                     <div id="num2-display" class="spinner-display">0</div>
                     <div class="spinner-controls">
                         <button class="spinner-button" onclick="changeNumber('num2', -1)">-</button>
@@ -427,15 +427,6 @@
             </svg>` },
         ];
         
-        // חישוב תוצאה
-        function calculateResult() {
-            const num1 = parseInt(document.getElementById('num1-display').innerText);
-            const num2 = parseInt(document.getElementById('num2-display').innerText);
-            const operator = document.getElementById('operator-display').innerText;
-            
-            return operator === '+' ? num1 + num2 : num1 - num2;
-        }
-        
         // שינוי מספרים בגלגלות
         function changeNumber(id, change) {
             const display = document.getElementById(`${id}-display`);
@@ -448,12 +439,59 @@
             if (value > 9) value = 9;
             
             display.innerText = value;
+            
+            // בדיקה אם צריך להחליף מספרים בפעולת חיסור
+            checkAndSwapForSubtraction();
         }
         
         // החלפת אופרטור
         function toggleOperator() {
             const display = document.getElementById('operator-display');
             display.innerText = display.innerText === '+' ? '-' : '+';
+            
+            // בדיקה אם צריך להחליף מספרים כשעוברים לחיסור
+            checkAndSwapForSubtraction();
+        }
+        
+        // פונקציה לבדיקה והחלפת מספרים בפעולת חיסור
+        function checkAndSwapForSubtraction() {
+            const operator = document.getElementById('operator-display').innerText;
+            
+            if (operator === '-') {
+                const num1Display = document.getElementById('num1-display');
+                const num2Display = document.getElementById('num2-display');
+                const num1 = parseInt(num1Display.innerText);
+                const num2 = parseInt(num2Display.innerText);
+                
+                // אם המספר השמאלי גדול מהימני, החלף את המספרים פיזית
+                if (num2 > num1) {
+                    // החלפת המספרים במקומות
+                    const temp = num1Display.innerText;
+                    num1Display.innerText = num2Display.innerText;
+                    num2Display.innerText = temp;
+                    
+                    // החלפת הספינרים עצמם במקום
+                    const container = document.querySelector('.exercise-container');
+                    const spinner1 = document.getElementById('spinner1');
+                    const spinner2 = document.getElementById('spinner2');
+                    const operator = document.querySelector('.operator-spinner');
+                    
+                    // סידור מחדש: spinner2, operator, spinner1
+                    container.innerHTML = '';
+                    container.appendChild(spinner2);
+                    container.appendChild(operator);
+                    container.appendChild(spinner1);
+                }
+            }
+        }
+        
+        // חישוב תוצאה
+        function calculateResult() {
+            const num1 = parseInt(document.getElementById('num1-display').innerText);
+            const num2 = parseInt(document.getElementById('num2-display').innerText);
+            const operator = document.getElementById('operator-display').innerText;
+            
+            return operator === '+' ? num1 + num2 : num1 - num2;
         }
         
         // הצגת תוצאה בצורות
