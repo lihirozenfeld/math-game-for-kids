@@ -427,19 +427,67 @@
             </svg>` },
         ];
         
-        // פונקציה לבדיקה והחלפת מספרים בפעולת חיסור
-        function checkAndSwapForSubtraction() {
-            const operator = document.getElementById('operator-display').innerText;
-            
-            if (operator === '-') {
+        // שינוי מספרים בגלגלות
+        function changeNumber(id, change) {
+            if (document.getElementById('operator-display').innerText === '-') {
+                // בפעולת חיסור, נטפל בשינויים בצורה מיוחדת
                 const num1Display = document.getElementById('num1-display');
                 const num2Display = document.getElementById('num2-display');
                 let num1 = parseInt(num1Display.innerText);
                 let num2 = parseInt(num2Display.innerText);
                 
-                // אם המספר השמאלי גדול מהימני, החלף את הערכים
+                if (id === 'num1') {
+                    // משנים את המספר הימני
+                    num1 += change;
+                    if (num1 < 0) num1 = 0;
+                    if (num1 > 9) num1 = 9;
+                    
+                    // אם המספר הימני קטן מהשמאלי, הגבל את השמאלי
+                    if (num1 < num2) {
+                        num2 = num1;
+                    }
+                    
+                    num1Display.innerText = num1;
+                    num2Display.innerText = num2;
+                } else if (id === 'num2') {
+                    // משנים את המספר השמאלי
+                    num2 += change;
+                    if (num2 < 0) num2 = 0;
+                    if (num2 > 9) num2 = 9;
+                    
+                    // בפעולת חיסור, המספר השמאלי לא יכול להיות גדול מהימני
+                    if (num2 > num1) {
+                        num2 = num1;
+                    }
+                    
+                    num2Display.innerText = num2;
+                }
+            } else {
+                // בפעולת חיבור, עובד כרגיל
+                const display = document.getElementById(`${id}-display`);
+                let value = parseInt(display.innerText);
+                
+                value += change;
+                if (value < 0) value = 0;
+                if (value > 9) value = 9;
+                
+                display.innerText = value;
+            }
+        }
+        
+        // החלפת אופרטור
+        function toggleOperator() {
+            const display = document.getElementById('operator-display');
+            display.innerText = display.innerText === '+' ? '-' : '+';
+            
+            // כשעוברים לחיסור, וודא שהמספר השמאלי לא גדול מהימני
+            if (display.innerText === '-') {
+                const num1Display = document.getElementById('num1-display');
+                const num2Display = document.getElementById('num2-display');
+                let num1 = parseInt(num1Display.innerText);
+                let num2 = parseInt(num2Display.innerText);
+                
                 if (num2 > num1) {
-                    num1Display.innerText = num2;
                     num2Display.innerText = num1;
                 }
             }
@@ -454,35 +502,6 @@
             
             // בעברית קוראים מימין לשמאל
             return operator === '+' ? rightNumber + leftNumber : rightNumber - leftNumber;
-        }
-        
-        // שינוי מספרים בגלגלות
-        function changeNumber(id, change) {
-            const display = document.getElementById(`${id}-display`);
-            let value = parseInt(display.innerText);
-            const originalValue = value;
-            
-            value += change;
-            
-            // הגבלת המספרים בין 0 ל-9
-            if (value < 0) value = 0;
-            if (value > 9) value = 9;
-            
-            display.innerText = value;
-            
-            // בדיקה אם צריך להחליף מספרים בפעולת חיסור
-            if (document.getElementById('operator-display').innerText === '-') {
-                checkAndSwapForSubtraction();
-            }
-        }
-        
-        // החלפת אופרטור
-        function toggleOperator() {
-            const display = document.getElementById('operator-display');
-            display.innerText = display.innerText === '+' ? '-' : '+';
-            
-            // בדיקה אם צריך להחליף מספרים כשעוברים לחיסור
-            checkAndSwapForSubtraction();
         }
         
         // הצגת תוצאה בצורות
@@ -541,12 +560,3 @@
             // מעבר ממסך התוצאה למסך התרגיל
             document.getElementById('next-btn').addEventListener('click', function() {
                 // איפוס המספרים והאופרטור לערכים התחלתיים
-                document.getElementById('num1-display').innerText = '0';
-                document.getElementById('num2-display').innerText = '0';
-                document.getElementById('operator-display').innerText = '+';
-                switchScreen('result-screen', 'exercise-screen');
-            });
-        };
-    </script>
-</body>
-</html>
